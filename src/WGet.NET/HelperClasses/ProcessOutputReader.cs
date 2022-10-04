@@ -37,33 +37,35 @@ namespace WGetNET.HelperClasses
             int idStartIndex = GetColumnStartIndex(output[labelLine], 2);
             int versionStartIndex = GetColumnStartIndex(output[labelLine], 3);
             int extraInfoStartIndex = GetColumnStartIndex(output[labelLine], 4);
+            int availableVersionIndex = GetColumnStartIndex(output[labelLine], 5);
 
             //Remove unneeded output Lines
             output = ArrayManager.RemoveRange(output, 0, labelLine + 2);
 
-            return CreatePackageListFromOutput(output, idStartIndex, versionStartIndex, extraInfoStartIndex);
+            return CreatePackageListFromOutput(output, idStartIndex, versionStartIndex, extraInfoStartIndex, availableVersionIndex);
         }
 
         /// <summary>
         /// Creates a package list from output.
         /// </summary>
         /// <param name="output">
-        /// The <see langword="array"/> containing the output.
+        ///     The <see langword="array"/> containing the output.
         /// </param>
         /// <param name="idStartIndex">
-        /// The <see cref="System.Int32"/> representing the start index of the id.
+        ///     The <see cref="System.Int32"/> representing the start index of the id.
         /// </param>
         /// <param name="versionStartIndex">
-        /// The <see cref="System.Int32"/> representing the start index of the version.
+        ///     The <see cref="System.Int32"/> representing the start index of the version.
         /// </param>
         /// <param name="extraInfoStartIndex">
-        /// The <see cref="System.Int32"/> representing the start index of the extra information.
+        ///     The <see cref="System.Int32"/> representing the start index of the extra information.
         /// </param>
+        /// <param name="availableVersionIndex"></param>
         /// <returns>
         /// A <see cref="System.Collections.Generic.List{T}"/> of <see cref="WGetNET.WinGetPackage"/>'s.
         /// </returns>
-        private static List<WinGetPackage> CreatePackageListFromOutput(
-            string[] output, int idStartIndex, int versionStartIndex, int extraInfoStartIndex)
+        private static List<WinGetPackage> CreatePackageListFromOutput(string[] output, int idStartIndex,
+            int versionStartIndex, int extraInfoStartIndex, int availableVersionIndex)
         {
             List<WinGetPackage> resultList = new List<WinGetPackage>();
 
@@ -71,7 +73,8 @@ namespace WGetNET.HelperClasses
             {
                 // [var1..var2] : selects the index range from var1 to var2
                 // (eg. if var1 is 2 and var2 is 5, the selectet index range will be [2, 3, 4])
-                if (output[i].Length >= extraInfoStartIndex) {
+                if (output[i].Length >= extraInfoStartIndex)
+                {
                     try
                     {
                         resultList.Add(
@@ -79,7 +82,9 @@ namespace WGetNET.HelperClasses
                             {
                                 PackageName = output[i][0..idStartIndex].Trim(),
                                 PackageId = output[i][idStartIndex..versionStartIndex].Trim(),
-                                PackageVersion = output[i][versionStartIndex..extraInfoStartIndex].Trim()
+                                PackageVersion = output[i][versionStartIndex..extraInfoStartIndex].Trim(),
+                                PackageVersionAvailable = output[i][extraInfoStartIndex..availableVersionIndex].Trim(),
+                                PackageSource = output[i][availableVersionIndex..output[i].Length].Trim()
                             });
                     }
                     catch
@@ -181,7 +186,7 @@ namespace WGetNET.HelperClasses
 
             return resultList;
         }
-    
+
         /// <summary>
         /// Gets the start index of a column in the given line.
         /// </summary>

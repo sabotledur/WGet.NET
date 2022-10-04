@@ -12,8 +12,8 @@ namespace WGetNET
         /// <summary>
         /// Gets or sets the name of the package.
         /// </summary>
-        public string PackageName 
-        { 
+        public string PackageName
+        {
             get
             {
                 return _packageName;
@@ -33,7 +33,7 @@ namespace WGetNET
         /// <summary>
         /// Gets or sets the id of the package.
         /// </summary>
-        public string PackageId 
+        public string PackageId
         {
             get
             {
@@ -54,7 +54,7 @@ namespace WGetNET
         /// <summary>
         /// Gets or sets the version of the package.
         /// </summary>
-        public string PackageVersion 
+        public string PackageVersion
         {
             get
             {
@@ -86,6 +86,9 @@ namespace WGetNET
                 return true;
             }
         }
+
+        public string PackageVersionAvailable { get; set; }
+        public string PackageSource { get; set; }
 
         private string _packageName = string.Empty;
         private string _packageId = string.Empty;
