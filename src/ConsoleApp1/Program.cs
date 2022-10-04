@@ -34,11 +34,11 @@ Console.WriteLine();
 Console.WriteLine("-----------------------------------------------");
 Console.WriteLine();
 
-//List<WinGetPackage> installedPackages = packageManager.GetInstalledPackages();
-//foreach (WinGetPackage package in installedPackages)
-//{
-//    Console.WriteLine($"{package.PackageName} | {package.PackageId} | {package.PackageVersion} | {package.PackageVersionAvailable} | {package.PackageSource}");
-//}
+List<WinGetPackage> installedPackages = packageManager.GetInstalledPackages();
+foreach (WinGetPackage package in installedPackages)
+{
+    Console.WriteLine($"{package.PackageName} | {package.PackageId} | {package.PackageVersion} | {package.PackageVersionAvailable} | {package.PackageSource}");
+}
 
 
 Console.ReadLine();
