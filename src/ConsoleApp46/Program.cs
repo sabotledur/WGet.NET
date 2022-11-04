@@ -24,17 +24,17 @@ namespace ConsoleApp46
             Console.WriteLine();
 
             WinGetPackageManager packageManager = new WinGetPackageManager();
-            List<WinGetPackage> winGetPackages = packageManager.GetUpgradeablePackages();
+            //List<WinGetPackage> winGetPackages = packageManager.GetUpgradeablePackages();
 
-            if (winGetPackages.Count > 0)
-                winGetPackages.RemoveAt(winGetPackages.Count - 1);
+            //if (winGetPackages.Count > 0)
+            //    winGetPackages.RemoveAt(winGetPackages.Count - 1);
 
-            Console.WriteLine("Package Name | Package ID | Package Version | Available Version | Source");
+            //Console.WriteLine("Package Name | Package ID | Package Version | Available Version | Source");
 
-            foreach (WinGetPackage package in winGetPackages.OrderBy(x => x.PackageName))
-            {
-                Console.WriteLine($"{package.PackageName} | {package.PackageId} | {package.PackageVersion} | {package.PackageVersionAvailable} | {package.PackageSource}");
-            }
+            //foreach (WinGetPackage package in winGetPackages.OrderBy(x => x.PackageName))
+            //{
+            //    Console.WriteLine($"{package.PackageName} | {package.PackageId} | {package.PackageVersion} | {package.PackageVersionAvailable} | {package.PackageSource}");
+            //}
 
 
             Console.WriteLine();
@@ -44,7 +44,18 @@ namespace ConsoleApp46
             List<WinGetPackage> installedPackages = packageManager.GetInstalledPackages();
             foreach (WinGetPackage package in installedPackages.OrderBy(x => x.PackageName))
             {
-                Console.WriteLine($"{package.PackageName} | {package.PackageId} | {package.PackageVersion} | {package.PackageVersionAvailable} | {package.PackageSource}");
+                WinGetPackage packageExtended = package;
+
+                if (package.PackageSource == "winget")
+                    packageExtended = packageManager.ShowPackage(package);
+
+                Console.WriteLine($"{packageExtended.PackageName} | " +
+                                  $"{packageExtended.PackageId} | " +
+                                  $"{packageExtended.PackageVersion} | " +
+                                  $"{packageExtended.PackageVersionAvailable} | " +
+                                  $"{packageExtended.PackageSource} | " +
+                                  $"{packageExtended.PackagePublisher} | " +
+                                  $"{packageExtended.PackageDescription}");
             }
 
             Console.ReadLine();

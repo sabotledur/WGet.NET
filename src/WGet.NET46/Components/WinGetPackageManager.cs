@@ -6,6 +6,7 @@ using System;
 using System.ComponentModel;
 using System.Collections.Generic;
 using WGetNET.HelperClasses;
+using System.Linq;
 
 namespace WGetNET
 {
@@ -14,7 +15,7 @@ namespace WGetNET
     /// </summary>
     public class WinGetPackageManager : WinGetInfo
     {
-        private const string _listCmd = "list";
+        private const string _listCmd = "list --accept-source-agreements";
         private const string _searchCmd = "search {0} --accept-source-agreements";
         private const string _installCmd = "install {0}";
         private const string _upgradeCmd = "upgrade {0}";
@@ -23,13 +24,38 @@ namespace WGetNET
         private const string _uninstallCmd = "uninstall {0}";
         private const string _exportCmd = "export -o {0}";
         private const string _importCmd = "import -i {0} --ignore-unavailable";
+        private const string _showCmd = "show {0} --accept-source-agreements";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WGetNET.WinGetPackageManager"/> class.
         /// </summary>
         public WinGetPackageManager()
         {
-           //Provide empty constructor
+            //Provide empty constructor
+        }
+
+        public WinGetPackage ShowPackage(WinGetPackage package)
+        {
+            try
+            {
+                ProcessResult result = _processManager.ExecuteWingetProcess(string.Format(_showCmd, $"\"{package.PackageId}\""));
+
+                if (package.PackageSource == "winget" && result.Output.Length > 2)
+                {
+                    package.PackagePublisher = result.Output[3].Split(':')[1];
+                    //package.PackageDescription = result.Output[8].Split(':')[1];
+                }
+
+                return package;
+            }
+            catch (Win32Exception)
+            {
+                throw new WinGetNotInstalledException();
+            }
+            catch (Exception e)
+            {
+                throw new WinGetActionFailedException($"The package search failed for {package.PackageId}", e);
+            }
         }
 
         //---Search------------------------------------------------------------------------------------
@@ -84,12 +110,32 @@ namespace WGetNET
         /// </exception>
         public List<WinGetPackage> GetInstalledPackages()
         {
+            List<WinGetPackage> packages = new List<WinGetPackage>();
+
             try
             {
                 ProcessResult result =
                     _processManager.ExecuteWingetProcess(_listCmd);
 
-                return ProcessOutputReader.ToPackageList(result.Output);
+                List<WinGetPackage> winGetPackages = ProcessOutputReader.ToPackageList(result.Output);
+                foreach (WinGetPackage package in winGetPackages.OrderBy(x => x.PackageName))
+                {
+                    WinGetPackage packageExtended = package;
+
+                    if (package.PackageSource == "winget")
+                        try
+                        {
+                            packageExtended = this.ShowPackage(package);
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
+
+                    packages.Add(packageExtended);
+                }
+
+                return packages;
             }
             catch (Win32Exception)
             {
@@ -240,7 +286,7 @@ namespace WGetNET
 
                 // Checking version to determine if "--include-unknown" is necessary
                 bool castSuccessful = int.TryParse(WinGetVersion.Split('.')[1], out int wingetMinorVersion);
-                if (castSuccessful && wingetMinorVersion >= 4) 
+                if (castSuccessful && wingetMinorVersion >= 4)
                 {
                     // Winget version supports new argument, add "--include-unknown" to arguments
                     argument += " " + _includeUnknown;

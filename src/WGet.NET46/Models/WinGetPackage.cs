@@ -89,6 +89,8 @@ namespace WGetNET
 
         public string PackageVersionAvailable { get; set; }
         public string PackageSource { get; set; }
+        public string PackagePublisher { get; set; }
+        public string PackageDescription { get; set; }
 
         private string _packageName = string.Empty;
         private string _packageId = string.Empty;

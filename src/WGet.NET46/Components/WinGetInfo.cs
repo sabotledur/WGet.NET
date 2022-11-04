@@ -2,6 +2,11 @@
 // Created by basicx-StrgV                          //
 // https://github.com/basicx-StrgV/                 //
 //--------------------------------------------------//
+
+using System;
+using System.IO;
+using System.Linq;
+
 namespace WGetNET
 {
     /// <summary>
@@ -19,16 +24,16 @@ namespace WGetNET
         /// <returns>
         /// <see langword="true"/> if winget is installed or <see langword="false"/> if not.
         /// </returns>
-        public bool WinGetInstalled 
-        { 
-            get 
+        public bool WinGetInstalled
+        {
+            get
             {
                 if (CheckWinGetVersion() != string.Empty)
                 {
                     return true;
                 }
                 return false;
-            } 
+            }
         }
 
         /// <summary>
@@ -37,12 +42,12 @@ namespace WGetNET
         /// <returns>
         /// A <see cref="System.String"/> with the version number.
         /// </returns>
-        public string WinGetVersion 
-        { 
-            get 
+        public string WinGetVersion
+        {
+            get
             {
                 return CheckWinGetVersion();
-            } 
+            }
         }
 
         /// <summary>
@@ -50,7 +55,16 @@ namespace WGetNET
         /// </summary>
         public WinGetInfo()
         {
-            _processManager = new ProcessManager("winget");
+            string wingetExecutableFullPath = "winget";
+
+            DirectoryInfo d = new DirectoryInfo("C:\\Program Files\\WindowsApps");
+            FileInfo[] fileInfos = d.GetFiles("winget.exe", SearchOption.AllDirectories);
+            if(fileInfos.Length >0)
+            {
+                wingetExecutableFullPath = fileInfos.Last().FullName;
+            }
+
+            _processManager = new ProcessManager(wingetExecutableFullPath);
         }
 
         private string CheckWinGetVersion()

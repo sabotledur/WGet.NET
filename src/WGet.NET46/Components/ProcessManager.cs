@@ -4,6 +4,7 @@
 //--------------------------------------------------//
 using System.IO;
 using System.Diagnostics;
+using System.Text;
 using WGetNET.HelperClasses;
 
 namespace WGetNET
@@ -56,6 +57,9 @@ namespace WGetNET
             using (Process proc = new Process { StartInfo = _winGetStartInfo })
             {
                 proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.StandardOutputEncoding = Encoding.UTF8;
+                //proc.StartInfo.StandardErrorEncoding = Encoding.UTF8;
+
                 proc.Start();
                 
                 //Read output to list
